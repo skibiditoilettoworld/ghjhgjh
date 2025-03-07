@@ -1,0 +1,77 @@
+name: Windows Server 2019
+run-name: Chào mừng Anh Minh đến với VPS 6 tiếng
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: 'Nhập token Ngrok'
+        required: true
+      os2:
+        description: 'Nhập mật khẩu'
+        required: true
+      os4:
+        description: 'Tạo tên người dùng riêng'
+        required: false
+      os3:
+        description: '(Tuỳ Chọn) Nhập các gói ở Chocolatey, ví dụ "firefox googlechrome vlc aegisub handbrake..." '
+        required: false
+jobs:
+  Windows_Server_2019:
+    timeout-minutes: 360
+    runs-on: windows-2019
+    name: Đang chạy
+    steps:
+    - name: Tải code cấu hình...
+      uses: actions/checkout@v1
+      timeout-minutes: 360
+    - name: Tạo tài khoản
+      run: |
+            powershell.exe -File 1.ps1 > $null
+            echo Không đổi được mật khẩu Administrator, sử dụng quyền Administrator và không được đổi mật khẩu
+            
+            net.exe user installer ${{ github.event.inputs.os2 }}
+            net user ${{ github.event.inputs.os4 }} ${{ github.event.inputs.os2 }} /add 
+            net localgroup administrators ${{ github.event.inputs.os4 }} /add
+            
+      timeout-minutes: 360
+    - name: Setup cho Ngrok và Remote Desktop
+      run: |
+            powershell.exe -File 2.ps1
+            ngrok authtoken ${{ github.event.inputs.os }}
+    - name: Chạy Ngrok
+      shell: bash
+      run: bash 3389.sh
+      timeout-minutes: 360
+    - name: Sau đây là mật khẩu và username
+      run: |
+            write-host Username: $env:UserName
+            write-host Username: installer
+            write-host Password: HIỂN THỊ MẬT KHẨU ĐÃ BỊ XOÁ VÌ LÍ DO BẢO MẬT
+
+         
+      timeout-minutes: 360
+    - name: Nhận IP VPS
+      run: |
+            write-host IP LÀ:
+            curl -s localhost:4040/api/tunnels | jq -r .tunnels[0].public_url || echo "Lỗi token"
+            
+            echo "Tính năng chocolatey đang bị bảo trì"
+            
+      timeout-minutes: 360
+    - name: Thành công!
+      run: |
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            sleep 200
+            bash Nn.sh
+      timeout-minutes: 999
